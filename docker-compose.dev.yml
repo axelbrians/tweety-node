@@ -1,0 +1,30 @@
+version: "3"
+services:
+  node-app:
+    build: 
+      # path of Dockerfile
+      context: .
+      # pass argument to Dockerfile later
+      args:
+        NODE_ENV: development
+
+    volumes:
+      # bind volume ./src into /app/src in node-app container
+      - ./src:/app/src
+      # anonymous voulume
+      - /app/node_modules
+
+    # POSTGRES env to connect to our postgres service
+    environment:
+      - NODE_ENV=development
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      
+    # this command will override CMD in Dockerfile
+    command: npm run start:dev
+
+  postgres:
+    # define named volumes to store data of postgres
+    # so its survive when container is stopped
+    volumes:
+      - ./src/migrations/dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
